@@ -1,0 +1,5 @@
+# Build files
+*.exe
+
+# ENV file
+.env
