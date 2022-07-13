@@ -42,3 +42,7 @@ func DBInstance() *mongo.Client {
 }
 
 var Client *mongo.Client = DBInstance()
+
+func OpenCollection(client *mongo.Client, collectionName string) *mongo.Collection {
+	return client.Database("go-jwt").Collection(collectionName)
+}
