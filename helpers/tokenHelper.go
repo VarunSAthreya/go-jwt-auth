@@ -1,13 +1,17 @@
 package helpers
 
 import (
+	"context"
 	"log"
 	"os"
 	"time"
 
 	"github.com/VarunSAthreya/go-jwt/database"
 	"github.com/golang-jwt/jwt/v4"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type SignedDetails struct {
@@ -53,4 +57,28 @@ func GenerateTokens(email string, firstName string, lastName string, userType st
 	}
 
 	return signedToken, signedRefreshToken, err
+}
+
+func UpdateTokens(userId string, token string, refreshToken string) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	updated_at, _ := time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
+	var updatedObj primitive.D
+
+	updatedObj = append(updatedObj, bson.E{Key: "token", Value: token})
+	updatedObj = append(updatedObj, bson.E{Key: "refresh_token", Value: refreshToken})
+	updatedObj = append(updatedObj, bson.E{Key: "updated_at", Value: updated_at})
+
+	upsert := true
+	filter := bson.M{"user_id": userId}
+	opt := options.UpdateOptions{Upsert: &upsert}
+
+	_, err := userCollection.UpdateOne(ctx, filter, bson.M{"$set": updatedObj}, &opt)
+
+	if err != nil {
+		log.Panic(err)
+		return
+	}
+
 }
