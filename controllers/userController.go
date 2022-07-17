@@ -2,13 +2,14 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
 	"time"
 
 	"github.com/VarunSAthreya/go-jwt-auth/database"
-	helpers "github.com/VarunSAthreya/go-jwt-auth/helpers"
+	"github.com/VarunSAthreya/go-jwt-auth/helpers"
 	"github.com/VarunSAthreya/go-jwt-auth/models"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -53,7 +54,7 @@ func Signup() gin.HandlerFunc {
 			return
 		}
 
-		count, err := userCollection.CountDocuments(ctx, bson.M{"email": user.Email})
+		count, err := userCollection.CountDocuments(ctx, bson.M{"email": *user.Email})
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error occurred while checking Email."})
@@ -66,7 +67,8 @@ func Signup() gin.HandlerFunc {
 			return
 		}
 
-		count, err = userCollection.CountDocuments(ctx, bson.M{"phone": user.Phone})
+		fmt.Println("Ab tak sahi hai, phone: ", user.Phone)
+		count, err = userCollection.CountDocuments(ctx, bson.M{"phone": *user.Phone})
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error occurred while checking Phone number."})
@@ -84,7 +86,7 @@ func Signup() gin.HandlerFunc {
 
 		user.ID = primitive.NewObjectID()
 		user.User_id = user.ID.Hex()
-		token, refreshToken, tokenErr := helpers.GenerateTokens(*user.Email, *user.First_name, *user.Last_name, *user.User_type, *&user.User_id)
+		token, refreshToken, tokenErr := helpers.GenerateTokens(*user.Email, *user.First_name, *user.Last_name, *user.User_type, user.User_id)
 
 		if tokenErr != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error occurred while generating tokens."})
@@ -126,12 +128,6 @@ func Signin() gin.HandlerFunc {
 
 		if err := c.BindJSON(&user); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-
-		validationErr := validate.Struct(user)
-		if validationErr != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": validationErr.Error()})
 			return
 		}
 
@@ -201,6 +197,7 @@ func GetUsers() gin.HandlerFunc {
 		startIndex, err := strconv.Atoi(c.Query("startIndex"))
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error occurred while parsing startIndex."})
+			return
 		}
 
 		matchStage := bson.D{{Key: "$match", Value: bson.D{{}}}}
