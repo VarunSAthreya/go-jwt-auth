@@ -7,9 +7,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/VarunSAthreya/go-jwt/database"
-	helpers "github.com/VarunSAthreya/go-jwt/helpers"
-	"github.com/VarunSAthreya/go-jwt/models"
+	"github.com/VarunSAthreya/go-jwt-auth/database"
+	helpers "github.com/VarunSAthreya/go-jwt-auth/helpers"
+	"github.com/VarunSAthreya/go-jwt-auth/models"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"go.mongodb.org/mongo-driver/bson"

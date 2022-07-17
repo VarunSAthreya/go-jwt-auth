@@ -3,7 +3,7 @@ package middleware
 import (
 	"net/http"
 
-	"github.com/VarunSAthreya/go-jwt/helpers"
+	"github.com/VarunSAthreya/go-jwt-auth/helpers"
 	"github.com/gin-gonic/gin"
 )
 
