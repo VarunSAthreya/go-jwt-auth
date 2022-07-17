@@ -188,16 +188,15 @@ func GetUsers() gin.HandlerFunc {
 		if err != nil || recordPerPage < 1 {
 			recordPerPage = 10
 		}
+
 		page, err1 := strconv.Atoi(c.Query("page"))
 		if err1 != nil || page < 1 {
 			page = 1
 		}
 
-		// startIndex := (page - 1) * recordPerPage
-		startIndex, err := strconv.Atoi(c.Query("startIndex"))
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error occurred while parsing startIndex."})
-			return
+		startIndex, err2 := strconv.Atoi(c.Query("startIndex"))
+		if err2 != nil {
+			startIndex = (page - 1) * recordPerPage
 		}
 
 		matchStage := bson.D{{Key: "$match", Value: bson.D{{}}}}
@@ -220,12 +219,12 @@ func GetUsers() gin.HandlerFunc {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error occurred while listing user items"})
 		}
 
-		var allusers []bson.M
-		if err = result.All(ctx, &allusers); err != nil {
+		var allUsers []bson.M
+		if err = result.All(ctx, &allUsers); err != nil {
 			log.Fatal(err)
 		}
 
-		c.JSON(http.StatusOK, allusers[0])
+		c.JSON(http.StatusOK, allUsers[0])
 	}
 }
 
