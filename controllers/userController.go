@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -67,7 +66,6 @@ func Signup() gin.HandlerFunc {
 			return
 		}
 
-		fmt.Println("Ab tak sahi hai, phone: ", user.Phone)
 		count, err = userCollection.CountDocuments(ctx, bson.M{"phone": *user.Phone})
 
 		if err != nil {

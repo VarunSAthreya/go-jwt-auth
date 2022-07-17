@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+  server:
+    image: server
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mongo
+    networks:
+      - backend
+    build: .
+
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    networks:
+      - backend
+    volumes:
+      - mongo-data:/data/db
+
+networks:
+  backend:
+    driver: bridge
+volumes:
+  mongo-data:
+    driver: local
